@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Personal Assistant</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <h1 class="main-heading">AI Personal Assistant</h1>
+
+    <div class="chat-container">
+
+        <!-- =========================
+             ASK ANYTHING
+        ========================== -->
+
+        <h2>Ask Anything</h2>
+
+        <form id="chat-form">
+
+            <input
+                type="text"
+                name="question"
+                placeholder="Type your question here..."
+                required
+            >
+
+            <button type="submit">Ask</button>
+
+        </form>
+
+        <p id="ask-loading" style="display: none;">
+            Processing...
+        </p>
+
+        <p id="chat-answer"></p>
+
+
+        <!-- =========================
+             SUMMARIZE EMAIL
+        ========================== -->
+
+        <h2>Summarize Email</h2>
+
+        <form id="emailForm">
+
+            <textarea
+                name="email_content"
+                placeholder="Paste email content here..."
+                required
+            ></textarea>
+
+            <button type="submit">Summarize</button>
+
+        </form>
+
+        <p id="summary-loading" style="display: none;">
+            Processing...
+        </p>
+
+        <p id="email-summary"></p>
+
+    </div>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script>
+
+        // =========================
+        // ASK ANYTHING
+        // =========================
+
+        document.getElementById("chat-form").onsubmit = async (e) => {
+
+            e.preventDefault();
+
+            let formData = new FormData(e.target);
+
+            let loading = document.getElementById("ask-loading");
+
+            loading.style.display = "block";
+
+            try {
+
+                let res = await fetch("/ask", {
+                    method: "POST",
+                    body: formData
+                });
+
+                let data = await res.json();
+
+                document.getElementById("chat-answer").innerText =
+                    data.response || data.error;
+
+            } catch (error) {
+
+                document.getElementById("chat-answer").innerText =
+                    "Something went wrong. Please try again.";
+
+                console.error(error);
+
+            } finally {
+
+                loading.style.display = "none";
+
+            }
+        };
+
+
+        // =========================
+        // SUMMARIZE EMAIL
+        // =========================
+
+        document.getElementById("emailForm").onsubmit = async (e) => {
+
+            e.preventDefault();
+
+            let formData = new FormData(e.target);
+
+            let loading = document.getElementById("summary-loading");
+
+            loading.style.display = "block";
+
+            try {
+
+                let res = await fetch("/summarize", {
+                    method: "POST",
+                    body: formData
+                });
+
+                let data = await res.json();
+
+                document.getElementById("email-summary").innerText =
+                    data.summary || data.error;
+
+            } catch (error) {
+
+                document.getElementById("email-summary").innerText =
+                    "Something went wrong. Please try again.";
+
+                console.error(error);
+
+            } finally {
+
+                loading.style.display = "none";
+
+            }
+        };
+
+    </script>
+
+</body>
+
+</html>
